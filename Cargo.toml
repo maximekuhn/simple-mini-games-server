@@ -1,0 +1,3 @@
+[workspace]
+
+members = ["server", "guess_the_number"]
