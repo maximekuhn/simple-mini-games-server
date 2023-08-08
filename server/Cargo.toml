@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 axum = "0.6.20"
 tokio = { version = "1.29.1", features = ["full"] }
+guess_the_number = { path = "../guess_the_number" }
+serde = { version = "1.0.183", features = ["derive"] }
