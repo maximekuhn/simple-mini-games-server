@@ -5,14 +5,14 @@ const DEFAULT_MIN_NUMBER: i32 = 1;
 const DEFAULT_MAX_NUMBER: i32 = 100;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-struct Settings {
+pub struct Settings {
     max_tries: u8,
     min_number: i32,
     max_number: i32,
 }
 
 impl Settings {
-    fn new_with_range(min_number: i32, max_number: i32) -> Self {
+    pub fn new_with_range(min_number: i32, max_number: i32) -> Self {
         let max_tries = DEFAULT_MAX_TRIES;
         let (min, max) = {
             if min_number >= max_number {
@@ -29,7 +29,7 @@ impl Settings {
         }
     }
 
-    fn new_with_range_and_max_tries(min_number: i32, max_number: i32, max_tries: u8) -> Self {
+    pub fn new_with_range_and_max_tries(min_number: i32, max_number: i32, max_tries: u8) -> Self {
         let mut settings = Settings::new_with_range(min_number, max_number);
         settings.max_tries = max_tries;
         settings
@@ -53,7 +53,7 @@ struct Game {
 }
 
 impl Game {
-    fn new(settings: Settings) -> Self {
+    pub fn new(settings: Settings) -> Self {
         let tries_count = 0;
         let number_to_guess =
             rand::thread_rng().gen_range(settings.min_number..=settings.max_number);
@@ -64,17 +64,17 @@ impl Game {
         }
     }
 
-    fn reset(&mut self) {
+    pub fn reset(&mut self) {
         self.tries_count = 0;
         self.number_to_guess =
             rand::thread_rng().gen_range(self.settings.min_number..=self.settings.max_number);
     }
 
-    fn information(&self) -> (u8 /* current tries count */, Settings) {
+    pub fn information(&self) -> (u8 /* current tries count */, Settings) {
         (self.tries_count, self.settings)
     }
 
-    fn guess(&mut self, player_guess: i32) -> (bool, Option<String>) {
+    pub fn guess(&mut self, player_guess: i32) -> (bool, Option<String>) {
         // Player tried to guess too many times
         if !self.can_play_more() {
             return (false, None);
@@ -102,7 +102,7 @@ impl Game {
         (result, hint)
     }
 
-    fn can_play_more(&self) -> bool {
+    pub fn can_play_more(&self) -> bool {
         self.tries_count != self.settings.max_tries
     }
 }
@@ -260,5 +260,29 @@ mod tests {
         }
 
         assert!(results.contains(&true));
+    }
+
+    #[test]
+    fn should_reset() {
+        let min_number = 1;
+        let max_number = 5;
+        let max_tries = max_number + 1;
+        let settings =
+            Settings::new_with_range_and_max_tries(min_number, max_number, max_tries as u8);
+        let mut sut = Game::new(settings);
+
+        for guess in 0..max_tries {
+            let _ = sut.guess(guess);
+        }
+
+        assert_eq!(max_tries as u8, sut.tries_count);
+
+        // reset
+        sut.reset();
+
+        assert_eq!(0, sut.tries_count);
+        assert_eq!(min_number, sut.settings.min_number);
+        assert_eq!(max_number, sut.settings.max_number);
+        assert_eq!(max_tries as u8, sut.settings.max_tries);
     }
 }
