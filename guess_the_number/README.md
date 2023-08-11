@@ -59,7 +59,7 @@ The response is the exact same as previous point.
 ### Settings
 This section describes all endpoints you can use to get information about current game settings.
 
-- GET `/settings`  
+- GET `/information`  
 If something goes wrong, the response's status will be set to "error" and the code will provide more information.  
 If the request is successfull, the response will look like this:
 ```json
@@ -69,7 +69,8 @@ If the request is successfull, the response will look like this:
     "data" : {
         "min_number": <NUMBER>,
         "max_number": <NUMBER>,
-        "max_tries": <NUMBER>
+        "max_tries": <NUMBER>,
+        "current_tries": <NUMBER>
     }
 }
 ```
