@@ -1,101 +1,63 @@
+use std::sync::Arc;
+
 use axum::{
     extract::{Query, State},
-    Json,
+    Extension, Json,
 };
 use guess_the_number::{Game, Settings};
-use serde::{Deserialize, Serialize};
+use tokio::sync::Mutex;
+
+use crate::guess_the_number::response::{create_response, ResponseData, ResponseStatus};
 
 use super::{
-    gamestate::GameState,
-    response::{Data, Init, Response},
+    request::{InitCustomParams, InitRangeParams},
+    response::{InformationResponse, InitialisationResponse, Response},
+    state::GameState,
 };
 
-/// Initialize a new game
-/// Route: /api/v1/games/guessthenumber/init
-/// HTTP method: POST
-pub async fn init(State(mut game): State<GameState>) -> Json<Response> {
-    // Initialize the game with default settings
-    game.game = Some(Game::new(Settings::default()));
-
-    // Create response
-    let (_, game_settings) = game.game.unwrap().information();
-    let response = Response {
-        status: String::from("success"),
-        code: 201,
-        data: Data::INIT(Init {
-            min_number: game_settings.min_number,
-            max_number: game_settings.max_number,
-            max_tries: game_settings.max_tries,
-        }),
-    };
-
-    // Send response
-    response.into()
+pub async fn init(State(mut state): State<Arc<Mutex<GameState>>>) -> Json<Response> {
+    println!("init endpoint");
+    todo!()
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Param {
-    pub min: i32,
-    pub max: i32,
-}
-
-/// Initialize a new game with specified range
-/// Route: /api/v1/games/guessthenumber/init-with-range
-/// HTTP method: POST
 pub async fn init_with_range(
-    Query(params): Query<Param>,
-    State(mut game): State<GameState>,
+    Extension(mut state): Extension<GameState>,
+    Query(range): Query<InitRangeParams>,
 ) -> Json<Response> {
-    // Initialize a new game with specified range
-    let settings = Settings::new_with_range(params.min, params.max);
-    game.game = Some(Game::new(settings));
-
-    // Create response
-    let (_, game_settings) = game.game.unwrap().information();
-    let response = Response {
-        status: String::from("success"),
-        code: 201,
-        data: Data::INIT(Init {
-            min_number: game_settings.min_number,
-            max_number: game_settings.max_number,
-            max_tries: game_settings.max_tries,
-        }),
-    };
-
-    // Send response
-    response.into()
+    println!("init with range endpoint");
+    todo!()
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ParamCustom {
-    pub min: i32,
-    pub max: i32,
-    pub tries: u8,
-}
-
-/// Initialize a new game with specified range and maximum amount of tries
-/// Route: /api/v1/games/guessthenumber/init-custom
-/// HTTP method: POST
 pub async fn init_custom(
-    Query(params): Query<ParamCustom>,
-    State(mut game): State<GameState>,
+    State(mut state): State<Arc<GameState>>,
+    Query(custom): Query<InitCustomParams>,
 ) -> Json<Response> {
-    // Initialize a new game with specified range
-    let settings = Settings::new_with_range_and_max_tries(params.min, params.max, params.tries);
-    game.game = Some(Game::new(settings));
+    println!("init custom endpoint");
+    todo!()
+}
 
-    // Create response
-    let (_, game_settings) = game.game.unwrap().information();
-    let response = Response {
-        status: String::from("success"),
-        code: 201,
-        data: Data::INIT(Init {
-            min_number: game_settings.min_number,
-            max_number: game_settings.max_number,
-            max_tries: game_settings.max_tries,
-        }),
+pub async fn information(State(state): State<Arc<GameState>>) -> Json<Response> {
+    println!("information endpoint");
+    todo!()
+}
+
+fn create_initialisation_response(game: &Game) -> InitialisationResponse {
+    let (_, settings) = game.information();
+    let response = InitialisationResponse {
+        min_number: settings.min_number,
+        max_number: settings.max_number,
+        max_tries: settings.max_tries,
     };
+    response
+}
 
-    // Send response
-    response.into()
+fn create_information_response(game: &Game) -> InformationResponse {
+    let (current_tries, settings) = game.information();
+    let response = InformationResponse {
+        min_number: settings.min_number,
+        max_number: settings.max_number,
+        max_tries: settings.max_tries,
+        current_tries,
+    };
+    response
 }

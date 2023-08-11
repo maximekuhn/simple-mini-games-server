@@ -7,7 +7,6 @@ pub struct GameState {
 
 impl GameState {
     pub fn new() -> Self {
-        let game = None;
-        Self { game }
+        Self { game: None }
     }
 }

@@ -1,30 +1,43 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Init {
+pub struct InitialisationResponse {
     pub min_number: i32,
     pub max_number: i32,
     pub max_tries: u8,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Information {}
-
-#[derive(Serialize, Deserialize)]
-pub struct Play {}
-
-#[derive(Serialize, Deserialize)]
-pub enum Data {
-    EMPTY,
-    INIT(Init),
-    INFORMATION(Information),
-    PLAY(Play),
-    RESTART(String),
+pub struct InformationResponse {
+    pub min_number: i32,
+    pub max_number: i32,
+    pub max_tries: u8,
+    pub current_tries: u8,
 }
 
+/// All possible responses
+#[derive(Serialize, Deserialize)]
+pub enum ResponseData {
+    Initialisation(InitialisationResponse),
+    Information(InformationResponse),
+}
+
+/// All possible status
+#[derive(Serialize, Deserialize)]
+pub enum ResponseStatus {
+    SUCCESS,
+    ERROR,
+}
+
+/// Response
 #[derive(Serialize, Deserialize)]
 pub struct Response {
-    pub status: String,
+    pub status: ResponseStatus,
     pub code: u16,
-    pub data: Data,
+    pub data: Option<ResponseData>,
+}
+
+pub fn create_response(status: ResponseStatus, code: u16, data: Option<ResponseData>) -> Response {
+    let response = Response { status, code, data };
+    response
 }
