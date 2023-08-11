@@ -46,7 +46,8 @@ impl Default for Settings {
     }
 }
 
-struct Game {
+#[derive(Clone)]
+pub struct Game {
     settings: Settings,
     number_to_guess: i32,
     tries_count: u8,
