@@ -1,6 +1,6 @@
 use crate::guess_the_number::{
     gamestate::GameState,
-    routes::{init, init_with_range},
+    routes::{init, init_custom, init_with_range},
 };
 use axum::{routing::post, Router};
 use std::{
@@ -14,10 +14,13 @@ mod guess_the_number;
 async fn main() -> Result<(), Box<dyn Error>> {
     let app = Router::new()
         .route("/api/v1/games/guessthenumber/init", post(init))
-        .with_state(GameState::new())
         .route(
-            "/api/v1/games/guessthenumber/initwithrange",
+            "/api/v1/games/guessthenumber/init-with-range",
             post(init_with_range),
+        )
+        .route(
+            "/api/v1/games/guessthenumber/init-custom",
+            post(init_custom),
         )
         .with_state(GameState::new());
 

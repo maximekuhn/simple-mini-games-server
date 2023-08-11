@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Init {}
+pub struct Init {
+    pub min_number: i32,
+    pub max_number: i32,
+    pub max_tries: u8,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct Information {}

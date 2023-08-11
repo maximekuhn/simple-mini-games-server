@@ -6,9 +6,9 @@ const DEFAULT_MAX_NUMBER: i32 = 100;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Settings {
-    max_tries: u8,
-    min_number: i32,
-    max_number: i32,
+    pub max_tries: u8,
+    pub min_number: i32,
+    pub max_number: i32,
 }
 
 impl Settings {
