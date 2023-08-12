@@ -56,7 +56,7 @@ MIN_NUMBER and MAX_NUMBER are both integer (currently represented as i32 in rust
 NUM_TRIES is an unsigned integer (currently represented as u8 in rust code).  
 The response is the exact same as previous point.
 
-### Settings
+### Information
 This section describes all endpoints you can use to get information about current game settings.
 
 - GET `/information`  
