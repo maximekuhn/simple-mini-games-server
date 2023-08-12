@@ -7,7 +7,7 @@ use axum::{
 use tokio::sync::Mutex;
 
 use self::{
-    routes::{information, init},
+    routes::{information, init, init_custom, init_with_range},
     state::GameState,
 };
 
@@ -15,6 +15,8 @@ mod request;
 mod response;
 mod routes;
 mod state;
+
+const PREFIX: &str = "/api/v1/games/guessthenumber";
 
 /// Add all routes related to guess the number game and
 /// returns the router.
@@ -27,9 +29,20 @@ pub fn add_games_routes(mut router: Router) -> Router {
 
     // Add all required routes
     router = router
-        .route("/init", post(init).with_state(game_state.clone()))
         .route(
-            "/information",
+            format!("{}/init", PREFIX).as_str(),
+            post(init).with_state(game_state.clone()),
+        )
+        .route(
+            format!("{}/init-with-range", PREFIX).as_str(),
+            post(init_with_range).with_state(game_state.clone()),
+        )
+        .route(
+            format!("{}/init-custom", PREFIX).as_str(),
+            post(init_custom).with_state(game_state.clone()),
+        )
+        .route(
+            format!("{}/information", PREFIX).as_str(),
             get(information).with_state(game_state.clone()),
         );
 

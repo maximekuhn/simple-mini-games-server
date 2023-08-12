@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Query, State},
-    Extension, Json,
+    Json,
 };
 use guess_the_number::{Game, Settings};
 use tokio::sync::Mutex;
@@ -19,6 +19,42 @@ pub async fn init(State(state): State<Arc<Mutex<GameState>>>) -> Json<Response> 
     println!("init endpoint");
     let mut game_state = &mut *state.lock().await;
     game_state.game = Some(Game::new(Settings::default()));
+    let init_response = create_initialisation_response(&game_state.game.clone().unwrap());
+    let response = create_response(
+        ResponseStatus::SUCCESS,
+        201,
+        Some(ResponseData::Initialisation(init_response)),
+    );
+    Json::from(response)
+}
+
+pub async fn init_with_range(
+    State(state): State<Arc<Mutex<GameState>>>,
+    Query(range): Query<InitRangeParams>,
+) -> Json<Response> {
+    println!("init with range endpoint");
+    let mut game_state = &mut *state.lock().await;
+    game_state.game = Some(Game::new(Settings::new_with_range(range.min, range.max)));
+    let init_response = create_initialisation_response(&game_state.game.clone().unwrap());
+    let response = create_response(
+        ResponseStatus::SUCCESS,
+        201,
+        Some(ResponseData::Initialisation(init_response)),
+    );
+    Json::from(response)
+}
+
+pub async fn init_custom(
+    State(state): State<Arc<Mutex<GameState>>>,
+    Query(custom): Query<InitCustomParams>,
+) -> Json<Response> {
+    println!("init custom endpoint");
+    let mut game_state = &mut *state.lock().await;
+    game_state.game = Some(Game::new(Settings::new_with_range_and_max_tries(
+        custom.min,
+        custom.max,
+        custom.tries,
+    )));
     let init_response = create_initialisation_response(&game_state.game.clone().unwrap());
     let response = create_response(
         ResponseStatus::SUCCESS,
