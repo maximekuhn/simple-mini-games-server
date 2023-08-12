@@ -15,30 +15,32 @@ use super::{
     state::GameState,
 };
 
-pub async fn init(State(mut state): State<Arc<Mutex<GameState>>>) -> Json<Response> {
+pub async fn init(State(state): State<Arc<Mutex<GameState>>>) -> Json<Response> {
     println!("init endpoint");
-    todo!()
+    let mut game_state = &mut *state.lock().await;
+    game_state.game = Some(Game::new(Settings::default()));
+    let init_response = create_initialisation_response(&game_state.game.clone().unwrap());
+    let response = create_response(
+        ResponseStatus::SUCCESS,
+        201,
+        Some(ResponseData::Initialisation(init_response)),
+    );
+    Json::from(response)
 }
 
-pub async fn init_with_range(
-    Extension(mut state): Extension<GameState>,
-    Query(range): Query<InitRangeParams>,
-) -> Json<Response> {
-    println!("init with range endpoint");
-    todo!()
-}
-
-pub async fn init_custom(
-    State(mut state): State<Arc<GameState>>,
-    Query(custom): Query<InitCustomParams>,
-) -> Json<Response> {
-    println!("init custom endpoint");
-    todo!()
-}
-
-pub async fn information(State(state): State<Arc<GameState>>) -> Json<Response> {
+pub async fn information(State(state): State<Arc<Mutex<GameState>>>) -> Json<Response> {
     println!("information endpoint");
-    todo!()
+    let game_state = &*state.lock().await;
+    if let Some(game) = &game_state.game {
+        let response = create_response(
+            ResponseStatus::SUCCESS,
+            200,
+            Some(ResponseData::Information(create_information_response(game))),
+        );
+        return Json::from(response);
+    }
+    let response = create_response(ResponseStatus::ERROR, 404, None);
+    Json::from(response)
 }
 
 fn create_initialisation_response(game: &Game) -> InitialisationResponse {

@@ -7,7 +7,7 @@ use axum::{
 use tokio::sync::Mutex;
 
 use self::{
-    routes::{information, init, init_custom, init_with_range},
+    routes::{information, init},
     state::GameState,
 };
 
@@ -26,7 +26,12 @@ pub fn add_games_routes(mut router: Router) -> Router {
     let game_state = Arc::new(Mutex::new(GameState::new()));
 
     // Add all required routes
-    // TODO
+    router = router
+        .route("/init", post(init).with_state(game_state.clone()))
+        .route(
+            "/information",
+            get(information).with_state(game_state.clone()),
+        );
 
     // Return the upgraded router
     router
