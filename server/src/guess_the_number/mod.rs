@@ -7,7 +7,7 @@ use axum::{
 use tokio::sync::Mutex;
 
 use self::{
-    routes::{attempt, information, init, init_custom, init_with_range},
+    routes::{attempt, information, init, init_custom, init_with_range, restart_game},
     state::GameState,
 };
 
@@ -48,6 +48,10 @@ pub fn add_games_routes(mut router: Router) -> Router {
         .route(
             format!("{}/attempt", PREFIX).as_str(),
             post(attempt).with_state(game_state.clone()),
+        )
+        .route(
+            format!("{}/restart", PREFIX).as_str(),
+            post(restart_game).with_state(game_state.clone()),
         );
 
     // Return the upgraded router

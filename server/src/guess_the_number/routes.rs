@@ -7,7 +7,9 @@ use axum::{
 use guess_the_number::{Game, Settings};
 use tokio::sync::Mutex;
 
-use crate::guess_the_number::response::{create_response, ResponseData, ResponseStatus};
+use crate::guess_the_number::response::{
+    create_response, ResetResponse, ResponseData, ResponseStatus,
+};
 
 use super::{
     request::{InitCustomParams, InitRangeParams, PlayParams},
@@ -113,7 +115,7 @@ pub async fn attempt(
 
                 // Unexpected game situation
                 _ => {
-                    panic!("Unepexted game situation");
+                    panic!("Unexpected game situation");
                 }
             }
         };
@@ -121,6 +123,25 @@ pub async fn attempt(
             ResponseStatus::SUCCESS,
             200,
             Some(ResponseData::Play(play_response)),
+        );
+        return Json::from(response);
+    }
+    let response = create_response(ResponseStatus::ERROR, 404, None);
+    Json::from(response)
+}
+
+pub async fn restart_game(State(state): State<Arc<Mutex<GameState>>>) -> Json<Response> {
+    println!("restart endpoint");
+    let mut game_state = state.lock().await;
+    if let Some(game) = &mut game_state.game {
+        game.reset();
+        let reset_response = ResetResponse {
+            info: String::from("Game has been restarted"),
+        };
+        let response = create_response(
+            ResponseStatus::SUCCESS,
+            200,
+            Some(ResponseData::Reset(reset_response)),
         );
         return Json::from(response);
     }

@@ -22,12 +22,18 @@ pub struct PlayResponse {
     pub hint: Option<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct ResetResponse {
+    pub info: String,
+}
+
 /// All possible responses
 #[derive(Serialize, Deserialize)]
 pub enum ResponseData {
     Initialisation(InitialisationResponse),
     Information(InformationResponse),
     Play(PlayResponse),
+    Reset(ResetResponse),
 }
 
 /// All possible status
