@@ -12,3 +12,8 @@ pub struct InitCustomParams {
     pub max: i32,
     pub tries: u8,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct PlayParams {
+    pub user_guess: i32,
+}

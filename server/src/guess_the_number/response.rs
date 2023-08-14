@@ -15,11 +15,19 @@ pub struct InformationResponse {
     pub current_tries: u8,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct PlayResponse {
+    pub won: bool,
+    pub can_play_more: bool,
+    pub hint: Option<String>,
+}
+
 /// All possible responses
 #[derive(Serialize, Deserialize)]
 pub enum ResponseData {
     Initialisation(InitialisationResponse),
     Information(InformationResponse),
+    Play(PlayResponse),
 }
 
 /// All possible status

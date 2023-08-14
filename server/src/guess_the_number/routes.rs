@@ -10,8 +10,8 @@ use tokio::sync::Mutex;
 use crate::guess_the_number::response::{create_response, ResponseData, ResponseStatus};
 
 use super::{
-    request::{InitCustomParams, InitRangeParams},
-    response::{InformationResponse, InitialisationResponse, Response},
+    request::{InitCustomParams, InitRangeParams, PlayParams},
+    response::{InformationResponse, InitialisationResponse, PlayResponse, Response},
     state::GameState,
 };
 
@@ -72,6 +72,55 @@ pub async fn information(State(state): State<Arc<Mutex<GameState>>>) -> Json<Res
             ResponseStatus::SUCCESS,
             200,
             Some(ResponseData::Information(create_information_response(game))),
+        );
+        return Json::from(response);
+    }
+    let response = create_response(ResponseStatus::ERROR, 404, None);
+    Json::from(response)
+}
+
+pub async fn attempt(
+    State(state): State<Arc<Mutex<GameState>>>,
+    Query(play_params): Query<PlayParams>,
+) -> Json<Response> {
+    println!("attempt endpoint");
+    let game_state = &mut *state.lock().await;
+    if let Some(game) = &mut game_state.game {
+        let play_response = {
+            match game.guess(play_params.user_guess) {
+                // User won
+                (true, None) => {
+                    PlayResponse {
+                        won: true,
+                        can_play_more: true, // does not matter
+                        hint: None,
+                    }
+                }
+
+                // User lost and/or can't play anymore
+                (false, None) => PlayResponse {
+                    won: false,
+                    can_play_more: false,
+                    hint: None,
+                },
+
+                // Incorrect guess
+                (false, Some(hint)) => PlayResponse {
+                    won: false,
+                    can_play_more: game.can_play_more(),
+                    hint: Some(hint),
+                },
+
+                // Unexpected game situation
+                _ => {
+                    panic!("Unepexted game situation");
+                }
+            }
+        };
+        let response = create_response(
+            ResponseStatus::SUCCESS,
+            200,
+            Some(ResponseData::Play(play_response)),
         );
         return Json::from(response);
     }
