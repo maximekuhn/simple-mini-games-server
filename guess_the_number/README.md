@@ -5,6 +5,17 @@ Rules :
 2. the user has to guess the number in order to win
 3. the user can only attempt to guess the number a limited amount of time. If the user tried too many times without being successfull, he loses
 
+## Table of contents
+
+- [Guess the number](#guess-the-number)
+  - [API documentation](#api-documentation)
+    - [Response structure](#response-structure)
+    - [Initialization](#initialization)
+    - [Information](#information)
+    - [Play](#play)
+    - [Restart game](#restart-game)
+
+
 ## API documentation
 
 Endpoint for this game: `/api/v1/games/guessthenumber`
