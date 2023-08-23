@@ -15,9 +15,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Add guess the number game's routes
     router = add_games_routes(router);
 
-    // Creates server using router and start serving at 127.0.0.1:3000
+    // Creates server using router and start serving at 0.0.0.0:3000 (all interfaces)
     axum::Server::bind(&SocketAddr::V4(SocketAddrV4::new(
-        Ipv4Addr::new(127, 0, 0, 1),
+        Ipv4Addr::new(0, 0, 0, 0),
         3000,
     )))
     .serve(router.into_make_service())
